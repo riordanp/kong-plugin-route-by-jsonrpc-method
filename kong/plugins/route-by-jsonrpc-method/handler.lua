@@ -65,7 +65,7 @@ function plugin:access(plugin_conf)
       kong.log.debug(dump(ngx.ctx))
       ngx.ctx.balancer_data.host = u.host
       ngx.ctx.balancer_data.port = u.port
-      kong.service.request.set_path("/a")
+      kong.service.request.set_path(u.path)
     end
   end
 end 
