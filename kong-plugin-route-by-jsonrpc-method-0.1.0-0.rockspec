@@ -11,7 +11,6 @@ description = {
   homepage = "https://www.github.com/riordanp/kong-plugin-route-by-jsonrpc-method"
 }
 dependencies = {
-  "lua ~> 5.1",
   "stringy ~> 0.4-1",
   "net-url ~> 1.1-1"
 }
