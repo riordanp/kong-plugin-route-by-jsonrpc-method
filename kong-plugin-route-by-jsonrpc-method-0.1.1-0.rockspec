@@ -1,5 +1,5 @@
 package = "kong-plugin-route-by-jsonrpc-method"
-version = "0.1.0-0"
+version = "0.1.1-0"
 supported_platforms = {"linux", "macosx"}
 source = {
   url = "git://github.com/riordanp/kong-plugin-route-by-jsonrpc-method",

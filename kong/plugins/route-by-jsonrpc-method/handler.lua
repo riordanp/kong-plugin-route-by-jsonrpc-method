@@ -59,12 +59,10 @@ function plugin:access(plugin_conf)
     end
 
     if list_includes(plugin_conf.methods, json["method"]) then
-      kong.log.debug("changing upstream to " .. plugin_conf.target_upstream_uri)
-
       local u = url.parse(plugin_conf.target_upstream_uri)
-      kong.log.debug(dump(ngx.ctx))
       ngx.ctx.balancer_data.host = u.host
       ngx.ctx.balancer_data.port = u.port
+      ngx.ctx.balancer_data.scheme = u.scheme
       kong.service.request.set_path(u.path)
     end
   end
