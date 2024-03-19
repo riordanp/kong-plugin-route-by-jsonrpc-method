@@ -32,8 +32,8 @@ local fixtures = {
 local function get(client, host, method, target)
   local opts = {
     headers = {
-        ["host"] = host,
-        ["content-type"] = "application/json"
+      ["host"] = host,
+      ["content-type"] = "application/json"
     },
     body = '{"method":"' .. method .. '"}'
   }
@@ -46,10 +46,11 @@ end
 for _, strategy in helpers.each_strategy() do
   describe(PLUGIN_NAME .. ": (access) [#" .. strategy .. "]", function()
     local client
-
+    print("1")
     lazy_setup(function()
+      print("2")
       local bp = helpers.get_db_utils(strategy, nil, { PLUGIN_NAME })
-
+      print("3")
       -- create the main service routing to the first or second one
       local mainroute = assert(bp.routes:insert({
         service = bp.services:insert({
@@ -59,14 +60,16 @@ for _, strategy in helpers.each_strategy() do
         }),
         hosts = { "test.com" },
       }))
-
+      print("4")
       -- add the plugin to the main route
       bp.plugins:insert {
         name = PLUGIN_NAME,
         route = { id = mainroute.id },
         config = {
-          target_upstream_uri = "http://127.0.0.1:16798/a",
-          methods={"test"},
+          upstreams = { {
+            uri = "http://127.0.0.1:16798/a",
+            methods = { "test" }
+          }}
         },
       }
       -- start kong
@@ -76,8 +79,8 @@ for _, strategy in helpers.each_strategy() do
         -- use the custom test template to create a local mock server
         nginx_conf = "spec/fixtures/custom_nginx.template",
         -- make sure our plugin gets loaded
-        plugins = "bundled," .. PLUGIN_NAME,
-      },nil, nil, fixtures))
+        plugins    = "bundled," .. PLUGIN_NAME,
+      }, nil, nil, fixtures))
     end)
 
     lazy_teardown(function()
@@ -100,11 +103,10 @@ for _, strategy in helpers.each_strategy() do
       end)
 
       describe("without the test method", function()
-          it("on test", function()
-            get(client, "test.com", "not-test", "normal")
-          end)
+        it("on test", function()
+          get(client, "test.com", "not-test", "normal")
+        end)
       end)
-
     end)
   end)
 end

@@ -13,47 +13,33 @@ end
 
 
 describe(PLUGIN_NAME .. ": (schema)", function()
-
     it("should accept a valid configuration", function()
         assert(validate({
-            target_upstream_uri = "new-upstream",
-            methods = { 'test' },
+            upstreams = { { uri = "new-upstream", methods = { 'test' }, }, { uri = "new-upstream1", methods = { 'test' }, } }
         }))
     end)
 
     describe("Errors: ", function()
-        it("should not accept invalid type for `target_upstream`", function()
+        it("should not accept invalid type for `upstreams`", function()
             local ok, err = validate({
-                target_upstream_uri = {},
-                methods = {},
+                upstreams = "blah",
             })
             assert.falsy(ok)
-            assert.same({ target_upstream_uri = "expected a string" }, err.config)
+            assert.same({ upstreams = "expected an array" }, err.config)
         end)
-        it("should not accept if `target_upstream` is missing", function()
+        it("should not accept if `upstreams` is missing", function()
             local ok, err = validate({
-                methods = {},
             })
             assert.falsy(ok)
-            assert.same({ target_upstream_uri = "required field missing" }, err.config)
+            assert.same({ upstreams = "required field missing" }, err.config)
         end)
 
         it("should not accept invalid type for `methods`", function()
             local ok, err = validate({
-                target_upstream_uri = "new-upstream",
-                methods = "test",
+                upstreams = {{ uri = "new-upstream", methods = "test" }},
             })
             assert.falsy(ok)
-            assert.same({ methods = "expected an array" }, err.config)
+            assert.same({upstreams = {{ methods = "expected an array" }}}, err.config)
         end)
-        it("should not accept if `methods` is missing", function()
-            local ok, err = validate({
-                target_upstream_uri = "new-upstream",
-            })
-            assert.falsy(ok)
-            assert.same({ methods = "required field missing" }, err.config)
-        end)
-
     end)
-
 end)

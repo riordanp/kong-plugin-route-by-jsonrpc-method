@@ -6,16 +6,34 @@ local schema = {
   name = PLUGIN_NAME,
   fields = {
     { consumer = typedefs.no_consumer },
-    { config = {
+    {
+      config = {
         type = "record",
         fields = {
-          { methods = {
+          {
+            upstreams = {
               type = "array",
-              elements = { type = "string" },
-              required = true } },
-          { target_upstream_uri = {
-              type = "string",
-              required = true } },
+              elements = {
+                type = "record",
+                fields = {
+                  {
+                    uri = {
+                      type = "string",
+                      required = true
+                    }
+                  },
+                  {
+                    methods = {
+                      type = "array",
+                      elements = { type = "string" },
+                      required = true
+                    }
+                  }
+                }
+              },
+              required = true
+            }
+          },
         },
       },
     },

@@ -10,30 +10,37 @@ local plugin = {
 }
 
 local function get_content_type()
-    local header_value = ngx.req.get_headers()["content-type"]
-    if header_value then
-        return stringy.strip(header_value):lower()
-    end
-    return nil
+  local header_value = ngx.req.get_headers()["content-type"]
+  if header_value then
+    return stringy.strip(header_value):lower()
+  end
+  return nil
 end
 
 local function list_includes(table, value)
   for i = 1, #table do
-      if table[i] == value then return true end
+    if table[i] == value then return true end
+  end
+  return false
+end
+
+local function list_find(table, value)
+  for i = 1, #table do
+    if table[i] == value then return table[i] end
   end
   return false
 end
 
 local function dump(o)
   if type(o) == 'table' then
-     local s = '{ '
-     for k,v in pairs(o) do
-        if type(k) ~= 'number' then k = '"'..k..'"' end
-        s = s .. '['..k..'] = ' .. dump(v) .. ','
-     end
-     return s .. '} '
+    local s = '{ '
+    for k, v in pairs(o) do
+      if type(k) ~= 'number' then k = '"' .. k .. '"' end
+      s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+    end
+    return s .. '} '
   else
-     return tostring(o)
+    return tostring(o)
   end
 end
 
@@ -58,14 +65,16 @@ function plugin:access(plugin_conf)
       return kong.response.error(403)
     end
 
-    if list_includes(plugin_conf.methods, json["method"]) then
-      local u = url.parse(plugin_conf.target_upstream_uri)
-      ngx.ctx.balancer_data.host = u.host
-      ngx.ctx.balancer_data.port = u.port
-      ngx.ctx.balancer_data.scheme = u.scheme
-      kong.service.request.set_path(u.path)
+    for _, upstream in pairs(plugin_conf.upstreams) do
+      if list_includes(upstream.methods, json["method"]) then
+        local u = url.parse(upstream.uri)
+        ngx.ctx.balancer_data.host = u.host
+        ngx.ctx.balancer_data.port = u.port
+        ngx.ctx.balancer_data.scheme = u.scheme
+        kong.service.request.set_path(u.path)
+      end
     end
   end
-end 
+end
 
 return plugin
