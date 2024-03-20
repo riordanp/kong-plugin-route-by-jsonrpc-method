@@ -3,7 +3,7 @@ version = "0.1.2-0"
 supported_platforms = {"linux", "macosx"}
 source = {
   url = "git://github.com/riordanp/kong-plugin-route-by-jsonrpc-method",
-  tag = "1.0.0"
+  tag = "0.1.2"
 }
 description = {
   summary = "A Kong plugin for routing based on JSONRPC method",
